@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class HomeScreen extends StatefulWidget {
+class HomeUserScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeUserScreenState createState() => _HomeUserScreenState();
 }
 
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeUserScreenState extends State<HomeUserScreen> {
   int _selectedTabIndex = 0;
 
   bool _isSearching = false;
@@ -22,16 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _fetchWorkers();  // เรียกใช้งานฟังก์ชันดึงข้อมูล
-  }
-
-  void _navigateToProfileScreen(BuildContext context) async {
-    // เมื่อกดไปที่หน้า Profile ให้รอผลกลับจากหน้า ProfileScreen
-    bool? shouldReload = await Navigator.pushNamed(context, '/profile');
-
-    // หากต้องการรีเฟรชข้อมูลในหน้า HomeScreen เมื่อกลับมา
-    if (shouldReload ?? false) {
-      _fetchWorkers(); // รีเฟรชข้อมูล
-    }
   }
 
   Future<void> _fetchWorkers() async {
@@ -291,20 +281,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
         switch (index) {
           case 0:
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pushReplacementNamed(context, '/homeuser');
             break;
           case 1:
             Navigator.pushNamed(context, '/settings');
             break;
           case 2:
-            Navigator.pushNamed(context, '/profile');
+            Navigator.pushNamed(context, '/profileuser');
             break;
         }
       },
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'หน้าแรก'),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'ตั้งค่า'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'โปรไฟล์'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'สมัครช่าง'),
       ],
     );
   }

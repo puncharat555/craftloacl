@@ -1,113 +1,43 @@
 import 'package:flutter/material.dart';
 
-class SettingsScreen extends StatefulWidget {
-  @override
-  _SettingsScreenState createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  bool isDarkModeEnabled = false; // สถานะ Dark Mode
-
-  void _showChangeNameDialog(BuildContext context) {
-    final TextEditingController _nameController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('เปลี่ยนชื่อ'),
-          content: TextField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: 'ชื่อใหม่',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // ปิด Dialog
-              },
-              child: Text('ยกเลิก'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String newName = _nameController.text.trim();
-                if (newName.isNotEmpty) {
-                  // TODO: อัปเดตชื่อในฐานข้อมูล
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('เปลี่ยนชื่อสำเร็จ!')),
-                  );
-                }
-                Navigator.pop(context);
-              },
-              child: Text('บันทึก'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+class SettingsPage extends StatelessWidget {
+  final Color themeColor = const Color(0xFFFFC107);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ตั้งค่า'),
-        backgroundColor: Color(0xFFFFC107),
+        title: const Text('Settings'),
+        backgroundColor: themeColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ส่วนหัวโปรไฟล์
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage('assets/images/profile.jpg'),
-                  ),
-                  SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'ชื่อผู้ใช้: นาย สมพงศ์ กองครกอบ',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Text('อีเมล: Sompong123@gmail.com'),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Divider(),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('เปลี่ยนชื่อ'),
+              leading: const Icon(Icons.lock, color: Colors.black),
+              title: const Text('Change Password'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
-                _showChangeNameDialog(context); // แสดง Dialog เปลี่ยนชื่อ
+                // Navigate to Change Password Screen
               },
             ),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.email),
-              title: Text('เปลี่ยนอีเมล'),
+              leading: const Icon(Icons.email, color: Colors.black),
+              title: const Text('Change Email'),
+              trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
+                // Navigate to Change Email Screen
               },
             ),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.lock),
-              title: Text('เปลี่ยนรหัสผ่าน'),
+              leading: const Icon(Icons.logout, color: Colors.black),
+              title: const Text('Logout'),
               onTap: () {
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('ลงชื่อออก'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/login');
+                Navigator.pushNamed(context, '/login');
               },
             ),
           ],
