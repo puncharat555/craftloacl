@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:looting/Screen/favorites_workers_screen.dart';
 import 'package:looting/Screen/home_screen.dart';
 import 'package:looting/Screen/homeusers_screen.dart';
 import 'package:looting/Screen/login_screen.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => SignUpScreen(),
         '/profile': (context) => ProfileScreen(),
         '/profileuser': (context) => ProfileuserScreen(),
+        '/favorite': (context) => FavoriteWorkersScreen(),
       },
     );
   }

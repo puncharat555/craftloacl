@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:looting/Screen/worker_detail_screen.dart';
 
 class HomeUserScreen extends StatefulWidget {
   @override
@@ -28,28 +29,22 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
     try {
       final response = await http.get(Uri.parse('http://10.0.0.89:3000/home'));
 
-      // ตรวจสอบค่าที่ได้รับจาก API
-      print('API Response: ${response.body}');  // ดูว่าได้รับข้อมูลอะไรจาก API
-
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
 
         setState(() {
-          // แปลงข้อมูลที่ได้ให้เป็นรูปแบบที่ต้องการ
           workers = data.map((worker) {
             return {
-
+              "tech_id": worker["tech_id"],       // เพิ่ม tech_id
               "tech_name": worker["tech_name"],
               "age": worker["age"],
               "phone_num": worker["phone_num"],
               "address": worker["address"],
               "type_tech": worker["type_tech"],
-              "profile_img": worker["profile_img"] ?? "assets/images/default.png", // default image if null
+              "profile_img": worker["profile_img"] ?? "assets/images/default.png",
             };
           }).toList();
         });
-
-        print('Workers Loaded: $workers');  // ดูว่า worker ได้รับข้อมูลไหม
 
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -65,6 +60,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
       ));
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -137,21 +133,39 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
   }
 
   Widget _buildFilters() {
-    return Wrap(
-      spacing: 8,
-      children: filters.map((filter) {
-        return FilterChip(
-          label: Text(filter),
-          selected: selectedFilter == filter,
-          onSelected: (isSelected) {
-            setState(() {
-              selectedFilter = isSelected ? filter : null;
-            });
-          },
-          backgroundColor: Colors.white,
-          selectedColor: Colors.amber,
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: filters.map((filter) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: FilterChip(
+              label: Text(
+                filter,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: selectedFilter == filter ? Colors.white : Colors.black,
+                ),
+              ),
+              selected: selectedFilter == filter,
+              onSelected: (isSelected) {
+                setState(() {
+                  selectedFilter = isSelected ? filter : null;
+                });
+              },
+              backgroundColor: Colors.white,
+              selectedColor: Colors.orangeAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17),
+                side: BorderSide(color: Colors.orange, width: 1),
+              ),
+              elevation: 4,
+              shadowColor: Colors.black.withOpacity(0.3),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -184,88 +198,100 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
       itemBuilder: (context, index) {
         final worker = filteredWorkers[index];
 
-        return Card(
-          elevation: 6,
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WorkerDetailScreen(worker: worker),
+              ),
+            );
+
+          },
+          child: Card(
+            elevation: 6,
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 6,
-                  spreadRadius: 2,
-                  offset: Offset(2, 3),
-                ),
-              ],
             ),
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: ClipOval(
-                    child: worker['profile_img'] != null && worker['profile_img'].isNotEmpty
-                        ? (worker['profile_img'].startsWith('http') || worker['profile_img'].startsWith('uploads'))
-                        ? Image.network(
-                      worker['profile_img'].startsWith('http')
-                          ? worker['profile_img']
-                          : 'http://10.0.0.89:3000/${worker['profile_img']}',
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    )
-                        : Image.asset(
-                      "assets/images/default.png",
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    )
-                        : Image.asset(
-                      "assets/images/default.png",
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6,
+                    spreadRadius: 2,
+                    offset: Offset(2, 3),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 8),
-                  height: 3,
-                  width: double.infinity,
-                  color: Colors.amber,
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Color(0xF8FBFBEE),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("ช่าง: ${worker['tech_name']}", style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text("อายุ: ${worker['age']} ปี"),
-                          Text("อาชีพ: ${worker['type_tech'] ?? 'ไม่มีข้อมูล'}"),
-                          Text("เบอร์โทร: ${worker['phone_num']}"),
-                          Text("ที่อยู่: ${worker['address'] ?? 'ไม่มีข้อมูล'}"),
-                        ],
+                ],
+              ),
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Center(
+                    child: ClipOval(
+                      child: worker['profile_img'] != null && worker['profile_img'].isNotEmpty
+                          ? (worker['profile_img'].startsWith('http') || worker['profile_img'].startsWith('uploads'))
+                          ? Image.network(
+                        worker['profile_img'].startsWith('http')
+                            ? worker['profile_img']
+                            : 'http://10.0.0.89:3000/${worker['profile_img']}',
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                      )
+                          : Image.asset(
+                        "assets/images/default.png",
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                      )
+                          : Image.asset(
+                        "assets/images/default.png",
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    height: 3,
+                    width: double.infinity,
+                    color: Colors.amber,
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Color(0xF8FBFBEE),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("ช่าง: ${worker['tech_name']}", style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text("อายุ: ${worker['age']} ปี"),
+                            Text("อาชีพ: ${worker['type_tech'] ?? 'ไม่มีข้อมูล'}"),
+                            Text("เบอร์โทร: ${worker['phone_num']}"),
+                            Text("ที่อยู่: ${worker['address'] ?? 'ไม่มีข้อมูล'}"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
     );
+
   }
 
 
@@ -287,13 +313,20 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
             Navigator.pushNamed(context, '/settings');
             break;
           case 2:
+            Navigator.pushNamed(context, '/favorite');
+            break;
+          case 3:
             Navigator.pushNamed(context, '/profileuser');
             break;
         }
       },
+      selectedItemColor: Colors.amber,  // สีที่เลือก (ชัดเจน)
+      unselectedItemColor: Colors.black,  // สีที่ไม่ได้เลือก (จางลง)
+      backgroundColor: Colors.white,  // พื้นหลังของ BottomNavigationBar
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'หน้าแรก'),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'ตั้งค่า'),
+        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'รายการโปรด'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'สมัครช่าง'),
       ],
     );

@@ -147,23 +147,42 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFilters() {
-    return Wrap(
-      spacing: 8,
-      children: filters.map((filter) {
-        return FilterChip(
-          label: Text(filter),
-          selected: selectedFilter == filter,
-          onSelected: (isSelected) {
-            setState(() {
-              selectedFilter = isSelected ? filter : null;
-            });
-          },
-          backgroundColor: Colors.white,
-          selectedColor: Colors.amber,
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: filters.map((filter) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: FilterChip(
+              label: Text(
+                filter,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: selectedFilter == filter ? Colors.white : Colors.black,
+                ),
+              ),
+              selected: selectedFilter == filter,
+              onSelected: (isSelected) {
+                setState(() {
+                  selectedFilter = isSelected ? filter : null;
+                });
+              },
+              backgroundColor: Colors.white,
+              selectedColor: Colors.orangeAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17),
+                side: BorderSide(color: Colors.orange, width: 1),
+              ),
+              elevation: 4,
+              shadowColor: Colors.black.withOpacity(0.3),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
+
 
   Widget _buildWorkerGrid() {
     // ถ้าข้อมูลว่างเปล่าให้แสดงข้อความ

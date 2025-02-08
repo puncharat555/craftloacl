@@ -239,7 +239,7 @@ class ProfileuserScreenState extends State<ProfileuserScreen> {
                   ),
                   SizedBox(height: 10),
                   _buildTextField(_phoneController, 'เบอร์โทรศัพท์', isNumber: true),
-                  _buildTextField(_addressController, 'ที่อยู่'),
+                  _buildTextField(_addressController, 'ที่อยู่ (เช่น หน้าม.พะเยา , บริเวณม.พะเยา)'),
                   SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
